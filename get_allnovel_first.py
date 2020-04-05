@@ -35,8 +35,7 @@ with open(filename,encoding='utf-8')as f:
 
         response = requests.get(url)
         response.encoding = 'gbk'
-
-        food = open('novel3\\%s str(title1).txt'%(int(i)+1),'a',encoding='utf-8')
+        food = open('novel3\\%s title1.txt'%(int(i)+1),'a',encoding='utf-8')
         food.write(response.text)
         food.close()
         i=i+1
