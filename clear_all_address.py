@@ -1,65 +1,32 @@
 #http://www.freesion.com/article/757572535/
 # -*- coding:utf-8
+import re
 import os
-import requests
-from lxml import etree
+import shelve
 
 
-# -*- 如果想获取 其他网站的小说,只需自己改动  xpath 的匹配代码
+#文件地址
+filename = 'address\\get_address_all.txt'
+with open(filename) as f:
+    contents = f.read()
+#打印contents内容
+#print(contents)
+content1=re.findall('<title>(.*?)</title>',contents)
+#<dd><a href="66689436.html" title="第1章 靳寒嵊玩女人很恐怖的">第1章 靳寒嵊玩女人很恐怖的</a> </dd>
+content2 = re.findall('<dd><a href=(.*?)</a> </dd>',contents)
+content3 = re.findall('<dd><a href="(.*?)"',contents)
+content4 = re.findall('<dd><a href="(.*?)" title="(.*?)">(.*?)</a> </dd>',contents)
+print(content1)
+print(content2)
+print(content3)
+print(content4)
 
-def requestHtml(url, tryTimes=1):  # 通过网址 获取对应网页的html 源代码
-    try:
-        r = requests.get(url, timeout=30)
-        r.raise_for_status()
-        r.encoding = r.apparent_encoding
-        print
-        url
-        return r.text
-    except:
-        if (tryTimes < 5):  # 获取失败之后是否重新获取,三次机会
-            return requestHtml(url, tryTimes + 1)
-        else:
-            print
-            "requestHtml() have a error"
-            return ""
-
-
-def parseChapters(url):  # 获取对应网页的小说章节 ,网址必须是https://www.2kxs.com/的小说对应的小说章节页面
-    htmlCode = requestHtml(url)
-    html = etree.HTML(htmlCode)
-    chapters = html.xpath("//dd[position()>4]/a/text()")
-    hrefs = html.xpath("//dd[position()>4]/a/@href")
-    return chapters, hrefs
+#fw=open('novel1\\clear_address.txt','a',encoding='utf-8')
+#fw.write('\n'.join('{} {}'.format(x[0],x[1])for x in content4))
+#fw.close()
+#shelffile
 
 
-def parseContent(url):  # 获取对应网页的小说正文部分 ,网址必须是https://www.2kxs.com/的小说对应的小说的阅读页面
-    htmlCode = requestHtml(url)
-    html = etree.HTML(htmlCode)
-    content = html.xpath("//child::p[2]/text()[position()>2]")
-    txt = ""
-    for i in content:
-        txt += i + "\n"
-    return txt
-
-
-def autoParseTxt(url, txtName):  # 自动生成对应的txt小说文档
-    chapters, urls = parseChapters(url)
-    txtContext = ""
-    for i in range(len(urls)):
-        content = parseContent(url + urls[i])
-        txtContext += "#" + chapters[i] + "#\n" + content
-        print
-        i * 1.0 / len(urls) * 100, "%"
-    file = open(txtName + ".txt", "w")
-    file.write(txtContext.encode("utf-8"))
-
-
-def main():
-    url = "https://www.xs321.com/18/18812/"  # 小说章节目录
-    txtName = "zuiqiangfantaoluxitong"  # 小说生成txt的名字
-    autoParseTxt(url, txtName)
-
-
-if __name__ == '__main__':
-    main()
-
+fq=open('novel1\\clear_address1.txt','a',encoding='utf-8')
+fq.write('\n'.join('{} {}'.format(x[0],x[1])for x in content4))
+fq.close()
